@@ -1,3 +1,4 @@
 node_modules/
 jobs.json
+logs/
 *.log

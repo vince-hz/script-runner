@@ -6,9 +6,10 @@
   "runner": {
     "maxConcurrent": 4,
     "defaultMode": "sync",
-    "stdoutMaxBytes": 1048576,
-    "stderrMaxBytes": 1048576,
-    "jobStoreFile": "./jobs.json"
+    "maxLogBytesPerStream": 1048576,
+    "previewMaxBytes": 4096,
+    "jobStoreFile": "./jobs.json",
+    "logsDir": "./logs"
   },
   "scriptsFile": "./scripts.json"
 }

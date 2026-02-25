@@ -37,15 +37,24 @@ function loadConfig(configFilePath) {
   const runner = {
     maxConcurrent: Number(config.runner.maxConcurrent || 1),
     defaultMode: config.runner.defaultMode || "sync",
-    stdoutMaxBytes: Number(config.runner.stdoutMaxBytes || 1024 * 1024),
-    stderrMaxBytes: Number(config.runner.stderrMaxBytes || 1024 * 1024),
+    maxLogBytesPerStream: Number(
+      config.runner.maxLogBytesPerStream ||
+        config.runner.stdoutMaxBytes ||
+        config.runner.stderrMaxBytes ||
+        1024 * 1024
+    ),
+    previewMaxBytes: Number(config.runner.previewMaxBytes || 4096),
     jobStoreFile: normalizePath(configDir, config.runner.jobStoreFile || "./jobs.json"),
+    logsDir: normalizePath(configDir, config.runner.logsDir || "./logs"),
   };
 
   assert(Number.isInteger(runner.maxConcurrent) && runner.maxConcurrent > 0, "invalid runner.maxConcurrent");
   assert(runner.defaultMode === "sync" || runner.defaultMode === "async", "invalid runner.defaultMode");
-  assert(Number.isInteger(runner.stdoutMaxBytes) && runner.stdoutMaxBytes >= 0, "invalid runner.stdoutMaxBytes");
-  assert(Number.isInteger(runner.stderrMaxBytes) && runner.stderrMaxBytes >= 0, "invalid runner.stderrMaxBytes");
+  assert(
+    Number.isInteger(runner.maxLogBytesPerStream) && runner.maxLogBytesPerStream > 0,
+    "invalid runner.maxLogBytesPerStream"
+  );
+  assert(Number.isInteger(runner.previewMaxBytes) && runner.previewMaxBytes >= 0, "invalid runner.previewMaxBytes");
 
   let scriptsRaw = null;
   let scriptsBaseDir = configDir;

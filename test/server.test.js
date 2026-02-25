@@ -86,9 +86,10 @@ test("server: run sync and async jobs over HTTP", async (t) => {
         runner: {
           maxConcurrent: 2,
           defaultMode: "sync",
-          stdoutMaxBytes: 1024,
-          stderrMaxBytes: 1024,
+          maxLogBytesPerStream: 1024,
+          previewMaxBytes: 512,
           jobStoreFile: jobsFile,
+          logsDir: path.join(dir, "logs"),
         },
         scriptsFile,
       },
@@ -124,7 +125,7 @@ test("server: run sync and async jobs over HTTP", async (t) => {
   assert.equal(syncRes.status, 200);
   const syncJson = await syncRes.json();
   assert.equal(syncJson.status, "succeeded");
-  assert.match(syncJson.stdout, /sync:a b/);
+  assert.match(syncJson.stdoutPreview, /sync:a b/);
 
   const asyncRes = await fetch(`http://127.0.0.1:${port}/run`, {
     method: "POST",
@@ -148,5 +149,12 @@ test("server: run sync and async jobs over HTTP", async (t) => {
   }, { timeoutMs: 8000, intervalMs: 100 });
 
   assert.equal(finalJob.status, "succeeded");
-  assert.match(finalJob.stdout, /async-done/);
+  assert.match(finalJob.stdoutPreview, /async-done/);
+
+  const logsRes = await fetch(
+    `http://127.0.0.1:${port}/jobs/${asyncJson.jobId}/logs?stream=stdout&offset=0&limit=2048`
+  );
+  assert.equal(logsRes.status, 200);
+  const logsJson = await logsRes.json();
+  assert.match(logsJson.data, /async-done/);
 });

@@ -29,9 +29,10 @@ function makeRunnerConfig({ scriptPath, slowPath, jobStoreFile, timeoutSec = 0 }
     runner: {
       maxConcurrent: 2,
       defaultMode: "sync",
-      stdoutMaxBytes: 1024,
-      stderrMaxBytes: 1024,
+      maxLogBytesPerStream: 1024,
+      previewMaxBytes: 512,
       jobStoreFile,
+      logsDir: path.join(path.dirname(jobStoreFile), "logs"),
     },
     scripts: [
       {
@@ -79,7 +80,15 @@ test("runner: sync run succeeds", async (t) => {
   assert.equal(result.async, false);
   assert.equal(result.job.status, STATUS.SUCCEEDED);
   assert.equal(result.job.code, 0);
-  assert.match(result.job.stdout, /ok:hello world/);
+  assert.match(result.job.stdoutPreview, /ok:hello world/);
+
+  const logs = runner.getJobLogs(result.job.jobId, {
+    stream: "stdout",
+    offset: 0,
+    limit: 1024,
+  });
+  assert.equal(logs.ok, true);
+  assert.match(logs.data, /ok:hello world/);
 });
 
 test("runner: invalid args are rejected", async (t) => {
@@ -192,9 +201,10 @@ test("config: supports scriptsFile split config", async (t) => {
         runner: {
           maxConcurrent: 1,
           defaultMode: "sync",
-          stdoutMaxBytes: 128,
-          stderrMaxBytes: 128,
+          maxLogBytesPerStream: 128,
+          previewMaxBytes: 64,
           jobStoreFile: "./jobs.json",
+          logsDir: "./logs",
         },
         scriptsFile: "./scripts.json",
       },

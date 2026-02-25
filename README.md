@@ -21,9 +21,10 @@ npm start
 - `server.port`: 监听端口
 - `runner.maxConcurrent`: 最大并发执行数
 - `runner.defaultMode`: 默认执行模式（`sync` 或 `async`）
-- `runner.stdoutMaxBytes`: stdout 最大保留字节
-- `runner.stderrMaxBytes`: stderr 最大保留字节
+- `runner.maxLogBytesPerStream`: 每个流（stdout/stderr）最大日志字节
+- `runner.previewMaxBytes`: 在任务元数据里保留的日志预览长度（尾部）
 - `runner.jobStoreFile`: 任务存储文件（重启后可查询历史）
+- `runner.logsDir`: 任务日志目录
 - `scriptsFile`: 脚本清单文件路径（相对路径相对于 `config.json`）
 
 `scripts.json`:
@@ -64,7 +65,11 @@ npm start
 
 ### `GET /jobs/:jobId`
 
-查询任务状态与输出。
+查询任务状态与元数据（包含 `stdoutPreview/stderrPreview`，不返回完整日志）。
+
+### `GET /jobs/:jobId/logs?stream=stdout&offset=0&limit=65536`
+
+按偏移分页读取完整日志内容。
 
 ### `POST /jobs/:jobId/cancel`
 
@@ -102,6 +107,12 @@ curl -sS -X POST http://127.0.0.1:8080/run \
 
 ```bash
 curl -sS http://127.0.0.1:8080/jobs/<jobId>
+```
+
+读取 stdout 日志（分页）：
+
+```bash
+curl -sS "http://127.0.0.1:8080/jobs/<jobId>/logs?stream=stdout&offset=0&limit=65536"
 ```
 
 取消任务：

@@ -56,6 +56,14 @@ function buildResponseFromJob(job) {
     durationMs: job.durationMs,
     createdAt: job.createdAt,
     mode: job.mode,
+    stdoutRef: job.stdoutRef,
+    stderrRef: job.stderrRef,
+    stdoutSize: job.stdoutSize,
+    stderrSize: job.stderrSize,
+    stdoutTruncated: job.stdoutTruncated,
+    stderrTruncated: job.stderrTruncated,
+    stdoutPreview: job.stdoutPreview,
+    stderrPreview: job.stderrPreview,
   };
 }
 
@@ -122,6 +130,31 @@ async function main() {
           return;
         }
         sendJson(res, 200, buildResponseFromJob(job));
+        return;
+      }
+
+      if (method === "GET" && /^\/jobs\/[^/]+\/logs$/.test(pathname)) {
+        const jobId = pathname.split("/")[2];
+        const stream = parsedUrl.searchParams.get("stream") || "stdout";
+        const offset = Number(parsedUrl.searchParams.get("offset") || 0);
+        const limit = Number(parsedUrl.searchParams.get("limit") || 65536);
+        const result = runner.getJobLogs(jobId, {
+          stream,
+          offset: Number.isInteger(offset) ? offset : 0,
+          limit: Number.isInteger(limit) ? limit : 65536,
+        });
+        if (!result.ok) {
+          const statusCode = result.code === "JOB_NOT_FOUND" ? 404 : 400;
+          sendJson(res, statusCode, {
+            ok: false,
+            error: {
+              code: result.code,
+              message: result.message,
+            },
+          });
+          return;
+        }
+        sendJson(res, 200, result);
         return;
       }
 
