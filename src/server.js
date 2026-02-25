@@ -1,6 +1,5 @@
 const fs = require("fs");
 const http = require("http");
-const url = require("url");
 const path = require("path");
 const { loadConfig } = require("./config");
 const { ScriptRunner } = require("./runner");
@@ -69,7 +68,7 @@ async function main() {
   const runner = new ScriptRunner(config);
 
   const server = http.createServer(async (req, res) => {
-    const parsedUrl = url.parse(req.url || "", true);
+    const parsedUrl = new URL(req.url || "/", "http://127.0.0.1");
     const method = req.method || "GET";
     const pathname = parsedUrl.pathname || "/";
 

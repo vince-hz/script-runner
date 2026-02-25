@@ -28,6 +28,10 @@ function clampBufferAppend(current, chunk, maxBytes) {
   return Buffer.concat([current, chunk.slice(0, rest)]);
 }
 
+function shellQuote(arg) {
+  return `'${String(arg).replace(/'/g, `'\"'\"'`)}'`;
+}
+
 function terminateChildProcess(child) {
   if (!child || typeof child.pid !== "number") {
     return;
@@ -204,7 +208,8 @@ class ScriptRunner {
     this.persistJobs();
 
     const startedMs = Date.now();
-    const child = spawn(script.path, job.args, {
+    const command = [script.path, ...job.args].map(shellQuote).join(" ");
+    const child = spawn(command, {
       stdio: ["ignore", "pipe", "pipe"],
       shell: true,
       detached: true,
