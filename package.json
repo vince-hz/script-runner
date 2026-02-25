@@ -1,12 +1,24 @@
 {
-  "name": "script-runner",
+  "name": "@vince-hz/script-runner",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "description": "Local HTTP server for running pre-configured shell scripts safely with args.",
   "main": "src/server.js",
+  "bin": {
+    "script-runner": "bin/script-runner.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "README.md"
+  ],
   "scripts": {
-    "start": "node src/server.js",
-    "test": "node --test test/*.test.js"
+    "start": "node bin/script-runner.js",
+    "test": "node --test test/*.test.js",
+    "release": "npm test && npm publish --access public",
+    "release:patch": "npm test && npm version patch && npm publish --access public",
+    "release:minor": "npm test && npm version minor && npm publish --access public",
+    "release:major": "npm test && npm version major && npm publish --access public"
   },
   "engines": {
     "node": ">=18"

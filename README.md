@@ -13,6 +13,25 @@ npm start
 
 默认监听：`0.0.0.0:8080`
 
+## CLI / npx
+
+本项目已提供 CLI：
+
+```bash
+script-runner --config ./config.json
+```
+
+发布到 npm 后可直接：
+
+```bash
+npx @vince-hz/script-runner --config ./config.json
+```
+
+注意：
+
+- 在本仓库目录内开发调试时，优先使用 `npm start` 或 `node bin/script-runner.js --config ./config.json`。
+- `npx @vince-hz/script-runner ...` 更适合在仓库外的普通项目目录中使用。
+
 ## 配置格式
 
 `config.json`:
@@ -132,3 +151,10 @@ curl -sS -X POST http://127.0.0.1:8080/jobs/<jobId>/cancel
 ## 兼容说明
 
 - 如果未配置 `scriptsFile`，服务会回退读取 `config.json` 里的 `scripts[]`（向后兼容旧格式）。
+
+## 发布到 npm
+
+1. 登录 npm：`npm login`
+2. 确认包名可用（如需改名，修改 `package.json.name`）
+3. 升级版本：`npm version patch`（或 `minor/major`）
+4. 发布：`npm publish --access public`
