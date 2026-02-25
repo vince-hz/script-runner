@@ -1,0 +1,14 @@
+{
+  "name": "script-runner",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local HTTP server for running pre-configured shell scripts safely with args.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "scripts": [
+    {
+      "id": "quick-echo",
+      "path": "./examples/quick-echo.sh",
+      "mode": "sync",
+      "timeoutSec": 30,
+      "args": {
+        "maxItems": 5,
+        "itemPattern": "^[a-zA-Z0-9._-]+$",
+        "itemMaxLength": 200
+      }
+    },
+    {
+      "id": "long-task",
+      "path": "./examples/long-task.sh",
+      "mode": "async",
+      "timeoutSec": 0,
+      "args": {
+        "maxItems": 10,
+        "itemPattern": "^[a-zA-Z0-9._-]+$",
+        "itemMaxLength": 500
+      }
+    }
+  ]
+}
